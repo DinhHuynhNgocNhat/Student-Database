@@ -1,6 +1,6 @@
 <img width="1039" height="624" alt="image" src="https://github.com/user-attachments/assets/ca8fce1c-755d-414a-8859-3ec1fab978da" />
 The commands to be implemented are:
-1. Add new Course: Queries the user for the required data and creates the new course in the database.
+1. Add new Course: Queries the user for the required data and creates the new course in the database. \n
 2. List courses: Prints all courses in the database with their data.
 3. Add new student: Queries the user for the required data (member data of Student and Address) and creates a new student in the database.
 4. Add enrollment: Queries the user for a matrikel number, a course id and a semester and adds the enrollment. If the enrollment already exists, a warning messages is printed.
