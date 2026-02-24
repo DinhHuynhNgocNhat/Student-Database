@@ -1,15 +1,277 @@
+# **STUDENT DATABASE (StudentDB)**
+## 📌 Overview
+
+**This project implements a complete object-oriented student database system including:**
+
+- Course management
+
+- Student management
+
+- Enrollment handling
+
+- File persistence (CSV-like format)
+
+- Network-based test data generation
+
+The architecture follows the Model–View–Controller pattern:
+
+- Model: StudentDb and domain classes
+
+- View + Controller: SimpleUI
+
+All user interaction is strictly handled inside SimpleUI.
+
+## 🎯 Objectives
+
+- Design immutable domain classes where possible
+
+- Automatically generate matriculation numbers
+
+- Hide internal storage optimizations
+
+- Maintain strict separation between model and UI
+
+## 🏗 System Architecture
+### 1️. Course (Base Class)
+
+**Represents a university course.**
+
+Derived classes:
+
+- WeeklyCourse
+
+- BlockCourse
+
+Storage Optimization
+
+The property major is internally stored as a char and mapped to a string via the static lookup table majorById.
+
+This optimization is completely hidden from users of the class.
+
+### 2️. Student
+
+**Automatically assigned matriculation number**
+
+- First name / last name
+
+- Date of birth
+
+- Address
+
+- Enrollments
+
+- The static member nextMatrikelNumber ensures unique IDs.
+
+### 3️. Address (Immutable)
+
+If any address field changes, a new object must be created.
+
+### 4️. Enrollment
+
+A student enrolled in a course
+
+- Semester
+
+- Optional grade
+
+### 5️ StudentDb (Model)
+
+- All courses
+
+- All students
+
+- All enrollments
+
+Provides methods for:
+
+- Adding courses
+
+- Adding students
+
+- Managing enrollments
+
+- Searching students
+
+- Updating student data
+
+❗ No input/output operations are allowed in this class.
+
+### 6️. SimpleUI (View + Controller)
+
+Handles:
+
+- All user input
+
+- Output formatting
+
+- Command dispatching
+
+Only this class may use cin and cout.
+
+## 📐 UML Diagrams
+🔹 Overall Class Diagram
+
 <img width="1039" height="624" alt="image" src="https://github.com/user-attachments/assets/ca8fce1c-755d-414a-8859-3ec1fab978da" />
-The commands to be implemented are: 
 
-1. Add new Course: Queries the user for the required data and creates the new course in the database. 
-2. List courses: Prints all courses in the database with their data. 
-3. Add new student: Queries the user for the required data (member data of Student and Address) and creates a new student in the database. 
-4. Add enrollment: Queries the user for a matrikel number, a course id and a semester and adds the enrollment. If the enrollment already exists, a warning messages is printed. 
-5. Print student: Queries the user for a matrikel number and prints the student including the enrolled courses and their results. 
-6. Search student: Queries the user for a string and prints the matrikel number, last name and first name of all students that have the provided string as substring in their first or last name. 
-7. Update student: Queries the user for a matrikel number. If the corresponding student is found in the data base, the properties (except for the matrikel number) are presented in a numbered list. Entering the item number allows the user to modify the property, entering "0" terminates the update.
-8. Write student to databasse.
-9. Read student from file.
-10. Get students from server.
+## 💾 Persisting the Database
+### 🎯 Goal
 
-The list of properties also includes the enrollments. When an enrollment is chosen for update, the user can remove the enrollment or enter a mark for the enrollment. 
+- Store and restore the database using a custom
+- Comma-separated values-inspired format.
+
+### File Structure:
+
+- Number of courses
+
+- Course entries
+
+- Number of students
+
+- Student entries
+
+- Number of enrollments
+
+- Enrollment entries
+
+- Values are separated using ;.
+
+### 📝 Writing Data
+
+- Each relevant class implements: virtual void write(std::ostream& out);
+
+Responsibilities:
+
+- Course::write → writes base class data
+
+- Derived classes → write type indicator + derived data
+
+- Student::write
+
+- Enrollment::write
+
+- StudentDb::write → orchestrates writing
+
+SimpleUI only triggers file operations.
+
+## 📥 Reading Data
+
+StudentDb::read(std::istream& in):
+
+- Clears database
+
+- Restores content
+
+- Delegates parsing to domain classes
+
+- Updates nextMatrikelNumber
+
+- Parsing logic is not implemented inside SimpleUI.
+
+## 🌐 Obtaining Test Data (POCO Version)
+### 🎯 Goal
+
+Automatically generate students by retrieving sample data from:
+
+- Host: www.hhs.users.h-da.cloud
+- Port: 4242
+
+Server commands:
+
+- generate
+
+- quit
+
+### 🛠 Implementation with POCO
+
+- Network communication is implemented using the
+- POCO C++ Libraries.
+
+Used components:
+
+- Poco::Net::StreamSocket
+
+- Poco::Net::SocketAddress
+
+- Poco::Net::SocketStream
+
+- Poco::JSON::Parser
+
+- Poco::JSON::Object
+
+### 🔁 Workflow
+
+- Establish TCP connection
+
+- Send generate command
+
+- Flush stream
+
+- Receive JSON data
+
+- Parse JSON using Poco::JSON::Parser
+
+- Extract:
+
+  - Name
+
+  - Date of birth
+
+  - Address
+
+- Create new Student object
+
+- Repeat if multiple students requested
+
+- Send quit command
+
+### ⚠ Important Notes
+
+- Network streams are buffered → call flush()
+
+- Server timeout: 5 seconds
+
+- Always terminate session properly using quit
+
+- No network logic inside StudentDb (handled via command in SimpleUI)
+
+## 🧪 Testing
+
+- Functional testing via SimpleUI
+
+- Persistence tested via write → read → compare
+
+- Enrollment and search functionality verified
+
+- Network feature tested manually
+
+## 📚 Documentation
+
+- Complete Doxygen documentation
+
+- Documentation includes:
+
+- Class responsibilities
+
+- Design decisions
+
+- File format explanation
+
+- Network communication approach
+
+## 🎯 Learning Objectives
+
+- Advanced OOP design
+
+- MVC architecture
+
+- Immutable objects
+
+- Polymorphism and delegation
+
+- Stream-based file I/O
+
+- Network programming with POCO
+
+- JSON parsing
+
+- Clean architectural separation
